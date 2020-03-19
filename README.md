@@ -21,7 +21,6 @@ Complete the steps described in the rest of this page, and in about five minutes
 * After a few seconds, a SlideTemplate sub-menu appears under the Add-ons menu. 
 * Click Add-ons > **SlideTemplate** > Open.
 * A dialog box indicates that the script requires authorization. Click Continue. A second dialog box requests authorization for specific Google services. Click Allow. This step needs to be done once.
-* Click Add-ons > **SlideTemplate** > Open (yes, again).
 * A sidebar appears. 
 * Click the **Reload** button. 
 * Fill in the desired value for each ${} Variable. 
