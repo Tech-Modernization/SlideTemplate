@@ -31,7 +31,7 @@ If Published it is shared with the world.  That is not done yet.
 
 ## Templates
 * [TestTemplate](https://docs.google.com/presentation/d/1fqtCE8iTxzaf1ZgcICB_qb4cjEaFoOuXnj9xG6PlMH8/edit#slide=id.g5e5b0c9b58_0_1)
-* [Standard Project Kickoff](https://docs.google.com/presentation/d/1R2JlzC2YPJEyN5KgFhCFuGkc5azNixe7yvErGS7F6SU/edit#slide=id.g5e5b0c9b58_0_9)
+* [Standard Project Kickoff](https://docs.google.com/presentation/d/1bb_Dw5Hyvb8POGhNyoLSxw9dIwKMgKsv7CUBFJarf8s)
 * [Data Strategy Pitch Template](https://docs.google.com/presentation/d/1LYlnNRtLgAOS29H29M5cUGtHKIVFtpKJsvPIzQzQi0U/edit#slide=id.g7ebd95ecfd_0_316)
 
 ## Learn more
