@@ -13,6 +13,7 @@ Complete the steps described in the rest of this page, and in about five minutes
 * Replace any code in these two files with the following content, respectively:
 [template.gs](template.gs)
 [sidebar.html](sidebar.html)
+* **Disable New Apps Script Runtime powered by Chrome V8**
 * Select the menu item File > Save all. Name your new script "SlideTemplate" and click OK. The script's name is shown to end users in several places, including the authorization dialog.
 
 ## Try it out
