@@ -30,11 +30,15 @@ Complete the steps described in the rest of this page, and in about five minutes
 ## Publish
 If Published it is shared with the world.  That is not done yet.
 
+## Templates
+* [TestTemplate](https://docs.google.com/presentation/d/1fqtCE8iTxzaf1ZgcICB_qb4cjEaFoOuXnj9xG6PlMH8/edit#slide=id.g5e5b0c9b58_0_1)
+* [Standard Project Kickoff](https://docs.google.com/presentation/d/1R2JlzC2YPJEyN5KgFhCFuGkc5azNixe7yvErGS7F6SU/edit#slide=id.g5e5b0c9b58_0_9)
+* [Data Strategy Pitch Template](https://docs.google.com/presentation/d/1LYlnNRtLgAOS29H29M5cUGtHKIVFtpKJsvPIzQzQi0U/edit#slide=id.g7ebd95ecfd_0_316)
+
 ## Learn more
 * [Translate](https://developers.google.com/apps-script/guides/slides/samples/translate)
 * https://developers.google.com/gsuite/add-ons/editors/slides/quickstart/translate
 * [Doc Variables](http://docvariables.com/) is similar, but no source
-* https://docs.google.com/presentation/d/1R2JlzC2YPJEyN5KgFhCFuGkc5azNixe7yvErGS7F6SU/edit#slide=id.g5e5b0c9b58_0_9
 * https://docs.google.com/presentation/d/1bb_Dw5Hyvb8POGhNyoLSxw9dIwKMgKsv7CUBFJarf8s/edit#slide=id.g5e5b0c9b58_0_1
 * https://developers.google.com/gsuite/add-ons/editors/slides
 * https://codelabs.developers.google.com/codelabs/apps-script-intro/#6
