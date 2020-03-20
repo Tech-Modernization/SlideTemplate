@@ -57,11 +57,12 @@ function getElementTexts(elements) {
   var texts = [];
   elements.forEach(function(element) {
     switch (element.getPageElementType()) {
-      case SlidesApp.PageElementType.GROUP:
-        element.asGroup().getChildren().forEach(function(child) {
-          texts = texts.concat(getElementTexts(child));
-        });
-        break;
+// This is not working, variables in GROUP elements are not discovered now
+//      case SlidesApp.PageElementType.GROUP:
+//        element.asGroup().getChildren().forEach(function(child) {
+//          texts = texts.concat(getElementTexts(child));
+//        });
+//        break;
       case SlidesApp.PageElementType.TABLE:
         var table = element.asTable();
         for (var y = 0; y < table.getNumColumns(); ++y) {
@@ -113,10 +114,8 @@ function collectVars() {
   var templateVars = [];
   for (var i = 0; i < slides.length; i++) {
     var slide = presentation.getSlides()[i];    
-    //this fails if there are images
     var texts = getElementTexts(slide.getPageElements()).forEach(function(text) {
         //Logger.log(typeof text);
-        //Logger.log(text.getPageElementType());
         var ptv = [];
         ptv = findAll(re, text.asRenderedString(),ptv);
         for (item in ptv) {
@@ -126,11 +125,8 @@ function collectVars() {
         }
     });
     Logger.log("Slide " + i);
-    Logger.log(templateVars);
-  }  
-//  var unique = removeDups(templateVars);
-  //or leave in order discovered?
-//  unique.sort();
+    //Logger.log(templateVars);
+  }
   Logger.log(templateVars);
   return templateVars;
 }
