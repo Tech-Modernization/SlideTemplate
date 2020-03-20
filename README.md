@@ -36,6 +36,7 @@ If Published it is shared with the world.  That is not done yet.
 
 ## Learn more
 * [Apps Script Slides API](https://developers.google.com/apps-script/reference/slides)
+* [Extending Google Slides](https://developers.google.com/apps-script/guides/slides)
 * [Translate](https://developers.google.com/apps-script/guides/slides/samples/translate)
 * https://developers.google.com/gsuite/add-ons/editors/slides/quickstart/translate
 * [Doc Variables](http://docvariables.com/) is similar, but no source
