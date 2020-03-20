@@ -108,20 +108,30 @@ function template(varList) {
 function collectVars() {
   var presentation = SlidesApp.getActivePresentation();
   var slides = presentation.getSlides();
+  Logger.log("Number of slide" + slides.length);
   var re = /(\${[A-Za-z0-9]+})/;
   var templateVars = [];
   for (var i = 0; i < slides.length; i++) {
     var slide = presentation.getSlides()[i];    
+    //this fails if there are images
     var texts = getElementTexts(slide.getPageElements()).forEach(function(text) {
-      templateVars = templateVars.concat(findAll(re, text.asRenderedString(),templateVars));
+        //Logger.log(typeof text);
+        //Logger.log(text.getPageElementType());
+        var ptv = [];
+        ptv = findAll(re, text.asRenderedString(),ptv);
+        for (item in ptv) {
+          if (templateVars.indexOf(ptv[item]) === -1) {
+            templateVars.push(ptv[item]);
+          }
+        }
     });
     Logger.log("Slide " + i);
     Logger.log(templateVars);
   }  
-  var unique = removeDups(templateVars);
+//  var unique = removeDups(templateVars);
   //or leave in order discovered?
-  unique.sort();
-  Logger.log(unique);
-  return unique;
+//  unique.sort();
+  Logger.log(templateVars);
+  return templateVars;
 }
 // [END SlideTemplate]
