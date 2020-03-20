@@ -35,6 +35,7 @@ If Published it is shared with the world.  That is not done yet.
 * [Data Strategy Pitch Template](https://docs.google.com/presentation/d/1LYlnNRtLgAOS29H29M5cUGtHKIVFtpKJsvPIzQzQi0U/edit#slide=id.g7ebd95ecfd_0_316)
 
 ## Learn more
+* [Apps Script Slides API](https://developers.google.com/apps-script/reference/slides)
 * [Translate](https://developers.google.com/apps-script/guides/slides/samples/translate)
 * https://developers.google.com/gsuite/add-ons/editors/slides/quickstart/translate
 * [Doc Variables](http://docvariables.com/) is similar, but no source
