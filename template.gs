@@ -15,8 +15,6 @@ function onOpen(event) {
       .addItem('Open','showSidebar')
       .addItem('Help','showHelp')
       .addToUi();
-  //TODO:  call updateVars() script
-  //SlidesApp.getUi().Button.('#run-reload').click(updateVars);
 }
 
 /**
@@ -33,7 +31,7 @@ function onInstall(event) {
 function showSidebar() {
   var ui = HtmlService
       .createHtmlOutputFromFile('sidebar')
-      .setTitle('Template');
+      .setTitle('SlideTemplate');
   SlidesApp.getUi().showSidebar(ui);
 }
 
