@@ -100,6 +100,7 @@ function template(varList) {
 
 function collectVars() {
   var presentation = SlidesApp.getActivePresentation();
+  //TODO: collect vars from masters and layouts too
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
   //TODO TEMPLATE_PREFIX
@@ -132,18 +133,66 @@ function collectVars() {
 function templateSmart(varList) {
   Logger.log('templateSmart');
   var presentation = SlidesApp.getActivePresentation();
+  
+  var masters = presentation.getMasters();
+  for (var i = 0; i < masters.length; i++) {
+    var replacedElements=[];
+    var elements = masters[i].getPageElements().forEach(function(element) {   
+     if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
+       element = element.asShape()
+       Logger.log("replace IMAGE master " +element);
+       text = element.getText();
+       for (key in varList) {
+         if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+           Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
+           var image = masters[i].insertImage( varList[key]);
+           resizeImage(image,element);
+           replacedElements.push(element);
+         }
+       }
+     }
+    });
+    Logger.log(replacedElements);
+    replacedElements.forEach(function(element) {
+      element.remove();
+    });
+  }
+
+  var layouts = presentation.getLayouts();
+  for (var i = 0; i < layouts.length; i++) {
+    var replacedElements=[];
+    var elements = layouts[i].getPageElements().forEach(function(element) {   
+     if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
+       element = element.asShape();
+       text = element.getText();
+       for (key in varList) {
+         if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+           Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
+           var image = layouts[i].insertImage( varList[key]);
+           resizeImage(image,element);
+           replacedElements.push(element);
+         }
+       }
+     }
+    });
+    Logger.log(replacedElements);
+    replacedElements.forEach(function(element) {
+      element.remove();
+    });
+  }
+  
   var slides = presentation.getSlides();
   for (var i = 0; i < slides.length; i++) {
     var replacedElements=[];
-    var slide = presentation.getSlides()[i];
-    var elements = slide.getPageElements().forEach(function(element) {   
+    var elements = slides[i].getPageElements().forEach(function(element) {   
      if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
        element = element.asShape()
        text = element.getText();
        for (key in varList) {
          if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
            Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
-           replaceImageTemplate(slide, varList[key], element);
+           var image = slides[i].insertImage( varList[key]);
+           resizeImage(image,element);
            replacedElements.push(element);
          }
        }
@@ -158,12 +207,11 @@ function templateSmart(varList) {
 }
 
 /**
- * Creates a image on the current slide from the given link, replacing the template text box
- * @param {string} imageUrl A String object representing an image URL
- * @param {text} the text box to replace
+ * Resizes an image to the same size as the element it is replacing
+ * @param {Image} image An Image object to resize
+ * @param {element} the element (Shape) to size to
  */
-function replaceImageTemplate(slide, imageUrl, element) {
-    var image = slide.insertImage(imageUrl);
+function resizeImage(image, element) {
     image.setWidth(element.getWidth());
     image.setHeight(element.getHeight());
     image.setLeft(element.getLeft());
