@@ -21,6 +21,7 @@ Complete the steps described in the rest of this page, and in about five minutes
 
 ## Publish
 SlideTemplate is published to the G-Suite marketplace for just Contino.io G-Suite domain.
+* bhood gcp account, project https://console.cloud.google.com/apis/api/appsmarket.googleapis.com/overview?project=slidetemplate
 * https://developers.google.com/gsuite/add-ons/how-tos/editor-publish-overview
 * https://developers.google.com/gsuite/add-ons/how-tos/publishing-editor-addons
 
