@@ -2,6 +2,11 @@
  */
 
 // [START SlideTemplate]
+
+var TEMPLATE_PREFIX = '${';
+var TEMPLATE_SUFFIX = '}';
+var TEMPLATE_IMAGE = 'IMAGE';
+
 /**
  * @OnlyCurrentDoc Limits the script to only accessing the current presentation.
  */
@@ -13,7 +18,6 @@
 function onOpen(event) {
   SlidesApp.getUi().createAddonMenu()
       .addItem('Open','showSidebar')
-      .addItem('Help','showHelp')
       .addToUi();
 }
 
@@ -33,17 +37,6 @@ function showSidebar() {
       .createHtmlOutputFromFile('sidebar')
       .setTitle('SlideTemplate');
   SlidesApp.getUi().showSidebar(ui);
-}
-
-/**
- * Opens a dialogbox with help.
- */
-function showHelp() {
-  var ui = SlidesApp.getUi();
-  var result = ui.alert(
-    'Provides a way to templatize slides using variables.',
-    'Variables like ${XXX} are globally replaced.',
-    ui.ButtonSet.OK);
 }
 
 /**
@@ -96,11 +89,12 @@ function removeDups(names) {
 
 function template(varList) {
   Logger.log('template');
+  templateSmart(varList);
   Logger.log(varList);
   var presentation = SlidesApp.getActivePresentation();
   for (key in varList) {
     Logger.log(key  + '=' + varList[key]);
-    if (varList[key] !== null) presentation.replaceAllText('${' + key + '}', varList[key], true);
+    if (varList[key] !== null) presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
   }
 }
 
@@ -108,6 +102,7 @@ function collectVars() {
   var presentation = SlidesApp.getActivePresentation();
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
+  //TODO TEMPLATE_PREFIX
   var re = /(\${[A-Za-z0-9]+})/;
   var templateVars = [];
   for (var i = 0; i < slides.length; i++) {
@@ -127,5 +122,51 @@ function collectVars() {
   }
   Logger.log(templateVars);
   return templateVars;
+}
+
+/**
+ * Apply all "smart" templates like IMAGE to each slide
+ * @param {string} varList The varList
+ */
+
+function templateSmart(varList) {
+  Logger.log('templateSmart');
+  var presentation = SlidesApp.getActivePresentation();
+  var slides = presentation.getSlides();
+  for (var i = 0; i < slides.length; i++) {
+    var replacedElements=[];
+    var slide = presentation.getSlides()[i];
+    var elements = slide.getPageElements().forEach(function(element) {   
+     if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
+       element = element.asShape()
+       text = element.getText();
+       for (key in varList) {
+         if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+           Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
+           replaceImageTemplate(slide, varList[key], element);
+           replacedElements.push(element);
+         }
+       }
+     }
+    });
+    Logger.log(replacedElements);
+    replacedElements.forEach(function(element) {
+      element.remove();
+    });
+  }
+  return;
+}
+
+/**
+ * Creates a image on the current slide from the given link, replacing the template text box
+ * @param {string} imageUrl A String object representing an image URL
+ * @param {text} the text box to replace
+ */
+function replaceImageTemplate(slide, imageUrl, element) {
+    var image = slide.insertImage(imageUrl);
+    image.setWidth(element.getWidth());
+    image.setHeight(element.getHeight());
+    image.setLeft(element.getLeft());
+    image.setTop(element.getTop());
 }
 // [END SlideTemplate]

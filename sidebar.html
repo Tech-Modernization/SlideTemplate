@@ -83,8 +83,14 @@
               }
               var t = ''
               Object.entries(vars).forEach(([key, value]) => {
-                t += '<label for=text_var_' +  value + '">' +  value + ':</label>';
-                t += '<input class="templatevar" type="text" id="text_var_' +  value + '" name="text_var_' +  value + '"><br>'
+                if (value.startsWith('IMAGE')) {
+                  //TODO: google drive URL picker
+                  t += '<label for=text_var_' +  value + '">' + value.substr(5) + ':</label>';
+                  t += '<input class="templatevar" type="text" id="text_var_' +  value + '" name="text_var_' +  value + '"><br>'
+                } else {
+                  t += '<label for=text_var_' +  value + '">' +  value + ':</label>';
+                  t += '<input class="templatevar" type="text" id="text_var_' +  value + '" name="text_var_' +  value + '"><br>'
+                }
               });
               $('#vars').html(t);
               return false;
