@@ -8,7 +8,7 @@ var TEMPLATE_SUFFIX = '}';
 var TEMPLATE_IMAGE = 'IMAGE';
 
 /**
- * @OnlyCurrentDoc Limits the script to only accessing the current presentation.
+ * (AT) OnlyCurrentDoc Limits the script to only accessing the current presentation.
  */
 
 /**
@@ -88,15 +88,20 @@ function removeDups(names) {
   return Object.keys(unique);
 }
 
-//function copyAndTemplate(folderId,varList) {
-function copyAndTemplate(folderId) {
-  var folder = DriveApp.getFolderById(folderId);
-  Logger.log(folder.getName());          
-  //var file = DriveApp.getFileById(SlidesApp.getActivePresentation(),getId());
-  //var newFile = file.makeCopy(file.getName(),folder);
-  //folder.addFile(newFile);
-  //SlidesApp.openById(newFile.getId());
-  //template(varList);
+function copyAndOpen(folderId) {
+  if (folderId.length > 0) {
+      var folder = DriveApp.getFolderById(folderId);
+      Logger.log(folder.getName());    
+      var presentation = SlidesApp.getActivePresentation();
+      var id = presentation.getUrl().split("id=").pop();
+      Logger.log(id);
+      var file = DriveApp.getFileById(id);
+      Logger.log(file.getName());          
+      var newFile = file.makeCopy(file.getName(),folder);
+      folder.addFile(newFile);
+      Logger.log(newFile.getUrl());          
+      SlidesApp.openByUrl(newFile.getUrl());
+  }
 }
 
 function template(varList) {
@@ -105,8 +110,10 @@ function template(varList) {
   Logger.log(varList);
   var presentation = SlidesApp.getActivePresentation();
   for (key in varList) {
-    Logger.log(key  + '=' + varList[key]);
-    if (varList[key] !== null) presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
+    if (!key.startsWith(TEMPLATE_IMAGE)) {
+      Logger.log(key  + '=' + varList[key]);
+      if (varList[key] !== null) presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
+    }
   }
 }
 
@@ -155,9 +162,9 @@ function templateSmart(varList) {
        Logger.log("replace IMAGE master " +element);
        text = element.getText();
        for (key in varList) {
-         if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+         if ((varList[key] != null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
            Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
-           var image = masters[i].insertImage( varList[key]);
+           var image = masters[i].insertImage(varList[key]);
            resizeImage(image,element);
            replacedElements.push(element);
          }
@@ -178,7 +185,7 @@ function templateSmart(varList) {
        element = element.asShape();
        text = element.getText();
        for (key in varList) {
-         if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+         if ((varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
            Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
            var image = layouts[i].insertImage( varList[key]);
            resizeImage(image,element);
@@ -201,7 +208,7 @@ function templateSmart(varList) {
        element = element.asShape()
        text = element.getText();
        for (key in varList) {
-         if ((varList[key] !== null) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+         if ((varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
            Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
            var image = slides[i].insertImage( varList[key]);
            resizeImage(image,element);

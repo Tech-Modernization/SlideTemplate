@@ -77,6 +77,7 @@
        * Runs a server-side function to apply templates to all slides.
        */
       function runTemplate() {
+        //showPicker();
         this.disabled = true;
         //collect variable key/value for each var from html
         var varList = new Object();
@@ -102,6 +103,7 @@
               return false;
             })
             .withUserObject(this)
+            //.copyAndTemplate("1F0ZH3d9V37ZIV75D8ToEaF7-Euj8NX4S",varList);
             .template(varList);
       }
       

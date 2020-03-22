@@ -61,7 +61,7 @@
             var doc = data[google.picker.Response.DOCUMENTS][0];
             var folderId = doc[google.picker.Document.ID];
             document.getElementById('result').innerHTML = folderId;
-            copyAndTemplate(folderId);
+            //copyAndOpen(folderId);
             //google.script.host.close();
         } else if (action == google.picker.Action.CANCEL) {
             google.script.host.close();
