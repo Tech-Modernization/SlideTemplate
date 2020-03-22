@@ -2,24 +2,63 @@
 -->
 <!-- [START SlideTemplate] -->
 <html>
-  <head>
+<head>
+    <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
     <style>
-      .logo { vertical-align: middle; }
-      ul { list-style-type: none; padding: 0; }
-      h4 { margin: 0; }
+    .branding-below {
+      bottom: 54px;
+      top: 0;
+    }
+    .branding-text {
+      left: 7px;
+      position: relative;
+      top: 3px;
+    }
+    .logo {
+      vertical-align: middle;
+    }
+    .width-100 {
+      width: 100%;
+      box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+    }
+    label {
+      font-weight: bold;
+    }
+    #creator-options,
+    #respondent-options {
+      background-color: #eee;
+      border-color: #eee;
+      border-width: 5px;
+      border-style: solid;
+      display: none;
+    }
+    #creator-email,
+    #respondent-email,
+    #button-bar,
+    #submit-subject {
+      margin-bottom: 10px;
+    }
+
+    #response-step {
+      display: inline;
+    }
     </style>
   </head>
   <body>
-    <div>
-    <form class="sidebar branding-below" name="main">
-      <div class="block" id="button-bar">
+    <div class="sidebar branding-below">
+    <form name="main">
+      <div id="button-bar">
         <button class="blue" id="run-reload">Reload</button>
         <button class="blue" id="run-template">Run</button>
       </div>
       <div class="block" id="vars"></div>
       <h5 class="error" id="error"></h5>
     </form>
+    <br>
     </div>
     <div class="sidebar bottom">
       <img alt="logo" class="logo"
