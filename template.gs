@@ -18,6 +18,7 @@ var TEMPLATE_IMAGE = 'IMAGE';
 function onOpen(event) {
   SlidesApp.getUi().createAddonMenu()
       .addItem('Open','showSidebar')
+      .addItem('picker','showPicker')
       .addToUi();
 }
 
@@ -85,6 +86,17 @@ function removeDups(names) {
     }
   });
   return Object.keys(unique);
+}
+
+//function copyAndTemplate(folderId,varList) {
+function copyAndTemplate(folderId) {
+  var folder = DriveApp.getFolderById(folderId);
+  Logger.log(folder.getName());          
+  //var file = DriveApp.getFileById(SlidesApp.getActivePresentation(),getId());
+  //var newFile = file.makeCopy(file.getName(),folder);
+  //folder.addFile(newFile);
+  //SlidesApp.openById(newFile.getId());
+  //template(varList);
 }
 
 function template(varList) {
@@ -216,5 +228,22 @@ function resizeImage(image, element) {
     image.setHeight(element.getHeight());
     image.setLeft(element.getLeft());
     image.setTop(element.getTop());
+}
+
+/**
+ * Displays an HTML-service dialog that contains client-side
+ * JavaScript code for the Google Picker API.
+ */
+function showPicker() {
+  var html = HtmlService.createHtmlOutputFromFile('picker.html')
+      .setWidth(600)
+      .setHeight(425)
+      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+  SlidesApp.getUi().showModalDialog(html, 'Select Folder');
+}
+
+function getOAuthToken() {
+  DriveApp.getRootFolder();
+  return ScriptApp.getOAuthToken();
 }
 // [END SlideTemplate]
