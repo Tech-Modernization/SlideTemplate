@@ -78,7 +78,7 @@ function findAll(regex, sourceString, aggregator) {
   const arr = re.exec(sourceString);
   if (arr === null) return aggregator;  
   const newString = sourceString.slice(arr.index + arr[0].length);
-  return findAll(regex, newString, aggregator.concat([arr[1].slice(TEMPLATE_PREFIX.length, -(TEMPLATE_SUFFIX.length))]));
+  return findAll(regex, newString, aggregator.concat([arr[1].slice(TEMPLATE_PREFIX.length, -(TEMPLATE_SUFFIX.length)).trim()]));
 }
 
 function removeDups(names) {
@@ -125,7 +125,7 @@ function collectVars() {
   //TODO: collect vars from masters and layouts too
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
-  var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9]+" + TEMPLATE_SUFFIX + ")";
+  var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9_ ]+" + TEMPLATE_SUFFIX + ")";
   var templateVars = [];
   for (var i = 0; i < slides.length; i++) {
     var slide = presentation.getSlides()[i];    
