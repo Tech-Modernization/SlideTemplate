@@ -3,6 +3,8 @@
 
 // [START SlideTemplate]
 
+//var TEMPLATE_PREFIX = '{{';
+//var TEMPLATE_SUFFIX = '}}';
 var TEMPLATE_PREFIX = '${';
 var TEMPLATE_SUFFIX = '}';
 var TEMPLATE_IMAGE = 'IMAGE';
@@ -72,10 +74,11 @@ function getElementTexts(elements) {
 }
 
 function findAll(regex, sourceString, aggregator) {
-  const arr = regex.exec(sourceString);
+  var re = new RegExp(regex.replace("$", "\\$"));
+  const arr = re.exec(sourceString);
   if (arr === null) return aggregator;  
   const newString = sourceString.slice(arr.index + arr[0].length);
-  return findAll(regex, newString, aggregator.concat([arr[1].slice(2, -1)]));
+  return findAll(regex, newString, aggregator.concat([arr[1].slice(TEMPLATE_PREFIX.length, -(TEMPLATE_SUFFIX.length))]));
 }
 
 function removeDups(names) {
@@ -122,8 +125,7 @@ function collectVars() {
   //TODO: collect vars from masters and layouts too
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
-  //TODO TEMPLATE_PREFIX
-  var re = /(\${[A-Za-z0-9]+})/;
+  var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9]+" + TEMPLATE_SUFFIX + ")";
   var templateVars = [];
   for (var i = 0; i < slides.length; i++) {
     var slide = presentation.getSlides()[i];    
