@@ -6,10 +6,11 @@ Complete the steps described in the rest of this page, and in about five minutes
 ![SlideTemplate](SlideTemplate.png)
 
 ## Try it out
-* Install the SlideTemplate from the Add-ons MarketPlace (must be logged in to contino G-suite domain)
-* Accept authorizations to complete installation.
-* Click Add-ons & **SlideTemplate** & Open.
-* A sidebar appears. 
+* Go to https://gsuite.google.com/marketplace. Log in with your Contino account.
+* Search for "SlideTemplate". Click on the result that appears, then click on the blue "Install" button.
+  Click "Continue" when prompted and accept the authorizations shown.
+* Click on one of the templates below, then click on "File", then on "Make a Copy", then click on "Entire Presentation."
+* Click Add-ons & **SlideTemplate** & Open. A sidebar will appear on the right side of your screen.
 * Click the **Reload** button. 
 * Fill in the desired value for each ${} Variable. 
 * To replace the text in the presentation, click **Run**.
