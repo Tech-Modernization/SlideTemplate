@@ -20,7 +20,8 @@ var TEMPLATE_IMAGE = 'IMAGE';
 function onOpen(event) {
   SlidesApp.getUi().createAddonMenu()
       .addItem('Open','showSidebar')
-      .addItem('picker','showPicker')
+      // no picker
+      //.addItem('picker','showPicker')
       .addToUi();
 }
 
@@ -51,17 +52,27 @@ function getElementTexts(elements) {
   var texts = [];
   elements.forEach(function(element) {
     switch (element.getPageElementType()) {
-// This is not working, variables in GROUP elements are not discovered now
-//      case SlidesApp.PageElementType.GROUP:
-//        element.asGroup().getChildren().forEach(function(child) {
-//          texts = texts.concat(getElementTexts(child));
-//        });
-//        break;
+       case SlidesApp.PageElementType.GROUP:
+        var grp = element.asGroup();
+        for (var child in grp.getChildren()) {
+          try {
+            texts = texts.concat(getElementTexts(child));
+          } catch (err) {
+            //This is not working, variables in GROUP elements are not discovered in this case
+            Logger.log(err);
+          }
+        }
+        break;
       case SlidesApp.PageElementType.TABLE:
         var table = element.asTable();
         for (var y = 0; y < table.getNumColumns(); ++y) {
           for (var x = 0; x < table.getNumRows(); ++x) {
-            texts.push(table.getCell(x, y).getText());
+            try {
+              texts.push(table.getCell(x, y).getText());
+            } catch (err) {
+                //This operation is only allowed on the head (upper left) cell of the merged cells
+                Logger.log(err);
+            }
           }
         }
         break;
@@ -108,13 +119,13 @@ function copyAndOpen(folderId) {
 }
 
 function template(varList) {
-  Logger.log('template');
-  templateSmart(varList);
   Logger.log(varList);
+  templateSmart(varList);
   var presentation = SlidesApp.getActivePresentation();
   for (key in varList) {
-    if (!key.startsWith(TEMPLATE_IMAGE)) {
-      Logger.log(key  + '=' + varList[key]);
+    k = key.toString();
+    if (!k.startsWith(TEMPLATE_IMAGE)) {
+      //Logger.log(k  + '=' + varList[key]);
       if (varList[key] !== null) presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
     }
   }
@@ -122,7 +133,6 @@ function template(varList) {
 
 function collectVars() {
   var presentation = SlidesApp.getActivePresentation();
-  //TODO: collect vars from masters and layouts too
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
   var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9_ ]+" + TEMPLATE_SUFFIX + ")";
@@ -139,8 +149,36 @@ function collectVars() {
           }
         }
     });
-    Logger.log("Slide " + i);
-    //Logger.log(templateVars);
+    //Logger.log("Slide " + i);
+  }
+  //TODO: collect vars from masters and layouts too
+  var masters = presentation.getMasters();
+  for (var i = 0; i < masters.length; i++) {
+    var texts = getElementTexts(masters[i].getPageElements()).forEach(function(text) {
+        //Logger.log(typeof text);
+        var ptv = [];
+        ptv = findAll(re, text.asRenderedString(),ptv);
+        for (item in ptv) {
+          if (templateVars.indexOf(ptv[item]) === -1) {
+            templateVars.push(ptv[item]);
+          }
+        }
+    });
+    //Logger.log("master " + i);
+  }
+  var layouts = presentation.getLayouts();
+  for (var i = 0; i < layouts.length; i++) {
+    var texts = getElementTexts(layouts[i].getPageElements()).forEach(function(text) {
+        //Logger.log(typeof text);
+        var ptv = [];
+        ptv = findAll(re, text.asRenderedString(),ptv);
+        for (item in ptv) {
+          if (templateVars.indexOf(ptv[item]) === -1) {
+            templateVars.push(ptv[item]);
+          }
+        }
+    });
+    //Logger.log("layout " + i);
   }
   Logger.log(templateVars);
   return templateVars;
@@ -162,14 +200,18 @@ function templateSmart(varList) {
      if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
        element = element.asShape()
        Logger.log("replace IMAGE master " +element);
-       text = element.getText();
-       for (key in varList) {
-         if ((varList[key] != null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-           Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
-           var image = masters[i].insertImage(varList[key]);
-           resizeImage(image,element);
-           replacedElements.push(element);
+       try {
+         text = element.getText();
+         for (key in varList) {
+           if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] != null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+             Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
+             var image = masters[i].insertImage(varList[key]);
+             resizeImage(image,element);
+             replacedElements.push(element);
+           }
          }
+       } catch (err) {
+         Logger.log(err);
        }
      }
     });
@@ -185,14 +227,19 @@ function templateSmart(varList) {
     var elements = layouts[i].getPageElements().forEach(function(element) {   
      if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
        element = element.asShape();
-       text = element.getText();
-       for (key in varList) {
-         if ((varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-           Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
-           var image = layouts[i].insertImage( varList[key]);
-           resizeImage(image,element);
-           replacedElements.push(element);
+       try {
+         text = element.getText();
+         Logger.log(text.asRenderedString());
+         for (key in varList) {
+           if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+             Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
+             var image = layouts[i].insertImage( varList[key]);
+             resizeImage(image,element);
+             replacedElements.push(element);
+           }
          }
+       } catch (err) {
+         Logger.log(err);
        }
      }
     });
@@ -207,15 +254,19 @@ function templateSmart(varList) {
     var replacedElements=[];
     var elements = slides[i].getPageElements().forEach(function(element) {   
      if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
-       element = element.asShape()
+       element = element.asShape();
        text = element.getText();
-       for (key in varList) {
-         if ((varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-           Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
-           var image = slides[i].insertImage( varList[key]);
-           resizeImage(image,element);
-           replacedElements.push(element);
+       try {
+         for (key in varList) {
+           if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
+             Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
+             var image = slides[i].insertImage( varList[key]);
+             resizeImage(image,element);
+             replacedElements.push(element);
+           }
          }
+       } catch (err) {
+         Logger.log(err);
        }
      }
     });
