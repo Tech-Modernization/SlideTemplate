@@ -118,7 +118,19 @@ function copyAndOpen(folderId) {
   }
 }
 
-function template(varList) {
+function getCurrentFile() {
+  var presentation = SlidesApp.getActivePresentation();
+  var id = presentation.getUrl().split("id=").pop();
+  Logger.log(id);
+  try {
+    var file = DriveApp.getFileById(id);
+  } catch (err) {
+    Logger.log(err);
+  }
+  return file;
+}
+
+function template(varList) {  
   Logger.log(varList);
   templateSmart(varList);
   var presentation = SlidesApp.getActivePresentation();
@@ -132,6 +144,14 @@ function template(varList) {
 }
 
 function collectVars() {
+  try {
+    var file = getCurrentFile();
+    Logger.log(file.getName());
+    Logger.log(file.getDescription());
+  } catch(err) {
+      Logger.log(err);
+  }
+  
   var presentation = SlidesApp.getActivePresentation();
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
@@ -306,4 +326,5 @@ function getOAuthToken() {
   DriveApp.getRootFolder();
   return ScriptApp.getOAuthToken();
 }
+
 // [END SlideTemplate]
