@@ -9,7 +9,7 @@ var TEMPLATE_PREFIX = '${';
 var TEMPLATE_SUFFIX = '}';
 var TEMPLATE_IMAGE = 'IMAGE';
 
-//TODO: not used here yet, in future save/recall all variable values under description and for searching
+var APP_TAG = "SlideTemplate";
 var TAG_PREFIX = '#';
 var TAG_SUFFIX = "_";
 
@@ -125,7 +125,6 @@ function copyAndOpen(folderId) {
 function getCurrentFile() {
   var presentation = SlidesApp.getActivePresentation();
   var id = presentation.getUrl().split("id=").pop();
-  Logger.log(id);
   try {
     var file = DriveApp.getFileById(id);
   } catch (err) {
@@ -134,16 +133,59 @@ function getCurrentFile() {
   return file;
 }
 
+function getTagVars() {
+  // TODO: read json file in github
+  return {"CloudProvider": ["AWS", "Azure", "GCP", "Other"], 
+                 "ContentSource": ["GDrive", "Slack", "Gmail", "Github", "Confluence", "YouTube", "Medium", "LucidChart", "Miro", "TechRadar"], 
+                 "ContentType": ["Pitch", "WhitePaper", "Infographic", "CaseStudiy", "Video", "YouTube", "Blog", "Webinar", "SoW"],
+                 "MarketSegment": ["Financial", "Insurance", "Health", "Telco", "Other"],
+                 "Region":  ["USA", "EMEA", "APAC"]};
+}
+
+function addDescriptionTagsVars(varList) {
+  var file = getCurrentFile();
+  var desc = file.getDescription();
+  //add SlideTemplate if not present
+  if (desc.indexOf(APP_TAG) < 0) {
+    desc += "\n" + APP_TAG;
+  }
+  var tagVars = getTagVars();
+  for (itag in Object.keys(tagVars)) {
+    var v = Object.keys(tagVars)[itag];  
+    //Logger.log(v);
+    var found = false;
+    for (key in varList) {
+      k = varList[key];
+      //Logger.log(k + " " + typeof(k));
+      if (v == k) {
+        //Logger.log(v + " FOUND");
+        found = true;
+        break;
+      }
+    }
+    if (found) {continue};
+    if (desc.indexOf(TAG_PREFIX+v)<0) { 
+      //Logger.log("ADD addDescriptionTagsVars"+v);
+      desc += "\n"  +TAG_PREFIX + v + TAG_SUFFIX + TEMPLATE_PREFIX + v + TEMPLATE_SUFFIX;
+      varList.push(v);
+    }
+  }
+  file.setDescription(desc);
+  return varList;
+}  
+
 function templateDescriptionVars(varList) {
   var file = getCurrentFile();
   var desc = file.getDescription();
   for (key in varList) {
     k = key.toString();
+    //Logger.log("templateDescriptionVars" + k);
     if (!k.startsWith(TEMPLATE_IMAGE)) {
-      if (varList[key] !== null) desc.replaceAll 
-      desc = desc.replace(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key]);
+      //Logger.log("templateDescriptionVars update value " + varList[key]);
+      desc = desc.replace(TEMPLATE_PREFIX + k + TEMPLATE_SUFFIX, varList[key]);
     }
   }
+  //Logger.log("templateDescriptionVars" + desc);
   file.setDescription(desc);
 }
 
@@ -156,7 +198,8 @@ function template(varList) {
     k = key.toString();
     if (!k.startsWith(TEMPLATE_IMAGE)) {
       //Logger.log(k  + '=' + varList[key]);
-      if (varList[key] !== null) presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
+      var re = new RegExp((TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX).replace("$", "\\$"));
+      if (varList[key] !== null) presentation.replaceAllText(re, varList[key], true);
     }
   }
 }
@@ -164,8 +207,13 @@ function template(varList) {
 function collectVars() {
   var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9_ ]+" + TEMPLATE_SUFFIX + ")";
   var templateVars = [];
-  templateVars = findAll(re, getCurrentFile().getDescription(),templateVars);  
-  Logger.log(templateVars);
+  templateVars = findAll(re, getCurrentFile().getDescription(),templateVars);
+  //Logger.log(templateVars);
+  
+  //add description tags if not present
+  templateVars = addDescriptionTagsVars(templateVars);  
+  //Logger.log(templateVars);
+  
   var presentation = SlidesApp.getActivePresentation();
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
@@ -222,7 +270,7 @@ function collectVars() {
  */
 
 function templateSmart(varList) {
-  Logger.log('templateSmart');
+  //Logger.log('templateSmart');
   var presentation = SlidesApp.getActivePresentation();
   
   var masters = presentation.getMasters();
@@ -231,12 +279,12 @@ function templateSmart(varList) {
     var elements = masters[i].getPageElements().forEach(function(element) {   
      if (element.getPageElementType() ===  SlidesApp.PageElementType.SHAPE) {
        element = element.asShape()
-       Logger.log("replace IMAGE master " +element);
+       //Logger.log("replace IMAGE master " +element);
        try {
          text = element.getText();
          for (key in varList) {
            if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] != null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-             Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
+             //Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
              var image = masters[i].insertImage(varList[key]);
              resizeImage(image,element);
              replacedElements.push(element);
@@ -247,7 +295,7 @@ function templateSmart(varList) {
        }
      }
     });
-    Logger.log(replacedElements);
+    //Logger.log(replacedElements);
     replacedElements.forEach(function(element) {
       element.remove();
     });
@@ -261,10 +309,10 @@ function templateSmart(varList) {
        element = element.asShape();
        try {
          text = element.getText();
-         Logger.log(text.asRenderedString());
+         //Logger.log(text.asRenderedString());
          for (key in varList) {
            if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-             Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
+             //Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
              var image = layouts[i].insertImage( varList[key]);
              resizeImage(image,element);
              replacedElements.push(element);
@@ -275,7 +323,7 @@ function templateSmart(varList) {
        }
      }
     });
-    Logger.log(replacedElements);
+    //Logger.log(replacedElements);
     replacedElements.forEach(function(element) {
       element.remove();
     });
@@ -291,7 +339,7 @@ function templateSmart(varList) {
        try {
          for (key in varList) {
            if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-             Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
+             //Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
              var image = slides[i].insertImage( varList[key]);
              resizeImage(image,element);
              replacedElements.push(element);
@@ -302,7 +350,7 @@ function templateSmart(varList) {
        }
      }
     });
-    Logger.log(replacedElements);
+    //Logger.log(replacedElements);
     replacedElements.forEach(function(element) {
       element.remove();
     });
