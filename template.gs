@@ -9,6 +9,10 @@ var TEMPLATE_PREFIX = '${';
 var TEMPLATE_SUFFIX = '}';
 var TEMPLATE_IMAGE = 'IMAGE';
 
+//TODO: not used here yet, in future save/recall all variable values under description and for searching
+var TAG_PREFIX = '#';
+var TAG_SUFFIX = "_";
+
 /**
  * (AT) OnlyCurrentDoc Limits the script to only accessing the current presentation.
  */
@@ -130,8 +134,22 @@ function getCurrentFile() {
   return file;
 }
 
+function templateDescriptionVars(varList) {
+  var file = getCurrentFile();
+  var desc = file.getDescription();
+  for (key in varList) {
+    k = key.toString();
+    if (!k.startsWith(TEMPLATE_IMAGE)) {
+      if (varList[key] !== null) desc.replaceAll 
+      desc = desc.replace(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key]);
+    }
+  }
+  file.setDescription(desc);
+}
+
 function template(varList) {  
   Logger.log(varList);
+  templateDescriptionVars(varList);
   templateSmart(varList);
   var presentation = SlidesApp.getActivePresentation();
   for (key in varList) {
@@ -144,19 +162,13 @@ function template(varList) {
 }
 
 function collectVars() {
-  try {
-    var file = getCurrentFile();
-    Logger.log(file.getName());
-    Logger.log(file.getDescription());
-  } catch(err) {
-      Logger.log(err);
-  }
-  
+  var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9_ ]+" + TEMPLATE_SUFFIX + ")";
+  var templateVars = [];
+  templateVars = findAll(re, getCurrentFile().getDescription(),templateVars);  
+  Logger.log(templateVars);
   var presentation = SlidesApp.getActivePresentation();
   var slides = presentation.getSlides();
   Logger.log("Number of slide" + slides.length);
-  var re = "(" + TEMPLATE_PREFIX + "[A-Za-z0-9_ ]+" + TEMPLATE_SUFFIX + ")";
-  var templateVars = [];
   for (var i = 0; i < slides.length; i++) {
     var slide = presentation.getSlides()[i];    
     var texts = getElementTexts(slide.getPageElements()).forEach(function(text) {
