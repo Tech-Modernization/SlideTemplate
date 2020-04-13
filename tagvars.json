@@ -1,0 +1,7 @@
+{
+ "CloudProvider": ["AWS", "Azure", "GCP", "Other"], 
+ "ContentSource": ["GDrive", "Slack", "Gmail", "Github", "Confluence", "YouTube", "Medium", "LucidChart", "Miro", "TechRadar"], 
+ "ContentType": ["Pitch", "WhitePaper", "Infographic", "CaseStudiy", "Video", "YouTube", "Blog", "Webinar", "SoW"],
+ "MarketSegment": ["Financial", "Insurance", "Health", "Telco", "Other"],
+ "Region":  ["USA", "EMEA", "APAC"]
+ }
