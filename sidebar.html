@@ -113,6 +113,9 @@
        */
       function updateVars() {
         this.disabled = true;
+        $('#error').text('Scanning, can take 10 sec or more');
+        $('#vars').empty();
+        
         // TODO: read json file in github
         var TAGVARS = {"CloudProvider": ["AWS", "Azure", "GCP", "Other"], 
               "ContentSource": ["GDrive", "Slack", "Gmail", "Github", "Confluence", "YouTube", "Medium", "LucidChart", "Miro", "TechRadar"], 
@@ -120,7 +123,6 @@
               "MarketSegment": ["Financial", "Insurance", "Health", "Telco", "Other"],
               "Region":  ["USA", "EMEA", "APAC"]};
 
-        $('#error').text('');
         google.script.run
             .withSuccessHandler(function(vars, element) {
               element.disabled = false;
@@ -151,6 +153,7 @@
                   }
                 }
               });
+              $('#error').empty();
               $('#vars').html(t);
               return false;
              })
