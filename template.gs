@@ -145,6 +145,9 @@ function getTagVars() {
 function addDescriptionTagsVars(varList) {
   var file = getCurrentFile();
   var desc = file.getDescription();
+  if (!desc || desc == undefined) {
+    desc = "";
+  }
   //add SlideTemplate if not present
   if (desc.indexOf(APP_TAG) < 0) {
     desc += "\n" + APP_TAG;
