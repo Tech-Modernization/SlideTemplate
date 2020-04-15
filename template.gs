@@ -184,7 +184,7 @@ function templateDescriptionVars(varList) {
     k = key.toString();
     //Logger.log("templateDescriptionVars" + k);
     if (!k.startsWith(TEMPLATE_IMAGE)) {
-      //Logger.log("templateDescriptionVars update value " + varList[key]);
+      Logger.log("templateDescriptionVars update value " + varList[key]);
       desc = desc.replace(TEMPLATE_PREFIX + k + TEMPLATE_SUFFIX, varList[key]);
     }
   }
@@ -200,9 +200,10 @@ function template(varList) {
   for (key in varList) {
     k = key.toString();
     if (!k.startsWith(TEMPLATE_IMAGE)) {
-      //Logger.log(k  + '=' + varList[key]);
-      var re = new RegExp((TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX).replace("$", "\\$"));
-      if (varList[key] !== null) presentation.replaceAllText(re, varList[key], true);
+      if (varList[key] !== null) {
+        Logger.log("replaceAll " + k  + '=' + varList[key]);
+        presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
+      }
     }
   }
 }
@@ -273,7 +274,7 @@ function collectVars() {
  */
 
 function templateSmart(varList) {
-  //Logger.log('templateSmart');
+  Logger.log('templateSmart');
   var presentation = SlidesApp.getActivePresentation();
   
   var masters = presentation.getMasters();
@@ -287,7 +288,7 @@ function templateSmart(varList) {
          text = element.getText();
          for (key in varList) {
            if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] != null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-             //Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
+             Logger.log("replace IMAGE master " + i + " " + key  + '=' + varList[key]);
              var image = masters[i].insertImage(varList[key]);
              resizeImage(image,element);
              replacedElements.push(element);
@@ -315,7 +316,7 @@ function templateSmart(varList) {
          //Logger.log(text.asRenderedString());
          for (key in varList) {
            if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-             //Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
+             Logger.log("replace IMAGE layout " + i + " " + key  + '=' + varList[key]);
              var image = layouts[i].insertImage( varList[key]);
              resizeImage(image,element);
              replacedElements.push(element);
@@ -342,7 +343,7 @@ function templateSmart(varList) {
        try {
          for (key in varList) {
            if ((key.startsWith(TEMPLATE_IMAGE)) && (varList[key] !== null) && (varList[key].length > 0) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX + TEMPLATE_IMAGE)) && (text.asRenderedString().startsWith(TEMPLATE_PREFIX+key))) {
-             //Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
+             Logger.log("replace IMAGE slide " + i + " " + key  + '=' + varList[key]);
              var image = slides[i].insertImage( varList[key]);
              resizeImage(image,element);
              replacedElements.push(element);
