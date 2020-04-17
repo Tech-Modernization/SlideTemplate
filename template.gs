@@ -200,7 +200,7 @@ function template(varList) {
   for (key in varList) {
     k = key.toString();
     if (!k.startsWith(TEMPLATE_IMAGE)) {
-      if (varList[key] !== null) {
+      if ((varList[key] !== null ) && (varList[key].length > 0) ){
         Logger.log("replaceAll " + k  + '=' + varList[key]);
         presentation.replaceAllText(TEMPLATE_PREFIX + key + TEMPLATE_SUFFIX, varList[key], true);
       }
